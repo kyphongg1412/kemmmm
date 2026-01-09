@@ -7,54 +7,82 @@
 
 <style>
 body{
-  margin:0; min-height:100vh; display:flex; justify-content:center; align-items:center;
-  background:linear-gradient(135deg,#ff9a9e,#fad0c4); font-family:Arial,sans-serif;
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+  font-family:Arial,sans-serif;
 }
 .box{
-  background:#fff; padding:22px; border-radius:20px; width:360px;
-  text-align:center; box-shadow:0 10px 30px rgba(0,0,0,.2);
+  background:#fff;
+  padding:22px;
+  border-radius:20px;
+  width:360px;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
 }
 h1{color:#ff4d6d;margin:10px 0}
 button{
-  padding:10px 22px; border:none; border-radius:20px;
-  background:#ff4d6d; color:#fff; font-size:16px; cursor:pointer;
+  padding:10px 22px;
+  border:none;
+  border-radius:20px;
+  background:#ff4d6d;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
 }
 .hidden{display:none}
+
 .option{
-  background:#ffe6eb; padding:12px; border-radius:14px; margin-top:10px;
-  cursor:pointer; transition:.2s;
+  background:#ffe6eb;
+  padding:12px;
+  border-radius:14px;
+  margin-top:10px;
+  cursor:pointer;
+  transition:.2s;
 }
 .option:hover{background:#ffccd5}
 .option.correct{background:#b7f7cc}
 .option.wrong{background:#ffb3b3}
-.option.disabled{pointer-events:none; opacity:.8}
+.option.disabled{pointer-events:none;opacity:.8}
 
 .progress{
-  height:8px; background:#eee; border-radius:10px; overflow:hidden; margin:10px 0 15px;
+  height:8px;
+  background:#eee;
+  border-radius:10px;
+  overflow:hidden;
+  margin:10px 0 15px;
 }
-.bar{height:100%; width:0%; background:#ff4d6d; transition:.3s}
+.bar{
+  height:100%;
+  width:0%;
+  background:#ff4d6d;
+  transition:.3s;
+}
 
-.tease{margin-top:8px; color:#ff4d6d; font-size:14px}
-.rank{font-size:18px; margin-top:10px}
+.tease{margin-top:8px;color:#ff4d6d;font-size:14px}
+.rank{font-size:20px;margin-top:12px;font-weight:bold}
 </style>
 </head>
 
 <body>
 <div class="box">
 
-<!-- LOVE -->
+<!-- PAGE 1 -->
 <div id="lovePage">
   <h1>Em có yêu anh không? 💕</h1>
-  <input placeholder="Nhập câu trả lời..."
+  <input id="loveInput" placeholder="Nhập câu trả lời..."
     style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc;">
   <br><br>
-  <button onclick="goToGame()">Trả lời</button>
+  <button onclick="goIntro()">Trả lời</button>
   <p id="loveResult" class="hidden">Anh Yêu Kemmmm 💖</p>
 </div>
 
 <!-- INTRO -->
-<div id="gameIntro" class="hidden">
-  <h1>🎮 Chơi một trò chơi</h1>
+<div id="intro" class="hidden">
+  <h1>🎮 Trò chơi nhỏ</h1>
   <p>Em hiểu anh được bao nhiêu %? 😏</p>
   <button onclick="startGame()">Bắt đầu</button>
 </div>
@@ -77,12 +105,7 @@ button{
 </div>
 
 <script>
-function goToGame(){
-  loveResult.classList.remove("hidden");
-  gameIntro.classList.remove("hidden");
-}
-
-const rawQuestions = [
+const questionsRaw = [
  {q:"📅 Ngày tụi mình yêu nhau?", a:["13/09/2025","14/02/2025","20/10/2025","01/01/2026"], c:0},
  {q:"📏 Chiều cao của anh?", a:["1m80","1m76","1m70","1m73"], c:1},
  {q:"🏸 Sở thích nhất của anh?", a:["Cầu lông & bi-a","Gym","Xem phim","Game"], c:0},
@@ -91,92 +114,90 @@ const rawQuestions = [
  {q:"💍 Điều quan trọng nhất trong tình yêu?", a:["Chung thủy – thấu hiểu – gắn bó","Tiền bạc","Vui là được","Lãng mạn"], c:0},
  {q:"💔 Điều khiến anh tổn thương nhất?", a:["Bị so sánh","Bị phủ nhận công sức","Bị bỏ rơi","Bị trách oan"], c:1},
  {q:"⚡ Khi có mâu thuẫn, anh sẽ?", a:["Giải quyết ngay","Im lặng","Chờ em nói","Né tránh"], c:0},
- {q:"❤️ Người anh yêu nhất?", a:["Kem","Bạn Bè","Bản thân","Bí mật"], c:0}
+ {q:"❤️ Người anh yêu nhất?", a:["Kem","Bạn bè","Bản thân","Bí mật"], c:0}
 ];
 
-let questions=[], idx=0, score=0;
+let questions=[], index=0, score=0;
 
 function shuffle(arr){
-  return arr.map(v=>({v, r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.v);
+  return arr.map(v=>({v, r:Math.random()}))
+            .sort((a,b)=>a.r-b.r)
+            .map(x=>x.v);
+}
+
+function goIntro(){
+  document.getElementById("loveResult").classList.remove("hidden");
+  document.getElementById("intro").classList.remove("hidden");
 }
 
 function startGame(){
   lovePage.classList.add("hidden");
-  gameIntro.classList.add("hidden");
+  intro.classList.add("hidden");
   game.classList.remove("hidden");
 
-  questions = shuffle(rawQuestions).map(q=>{
+  questions = shuffle(questionsRaw).map(q=>{
     const opts = q.a.map((t,i)=>({t, ok:i===q.c}));
-    const shuffled = shuffle(opts);
-    return {q:q.q, opts:shuffled};
+    return {q:q.q, opts:shuffle(opts)};
   });
-  idx=0; score=0;
-  loadQ();
+
+  index=0; score=0;
+  loadQuestion();
 }
 
-function loadQ(){
+function loadQuestion(){
   tease.textContent="";
-  const q = questions[idx];
+  const q = questions[index];
   question.textContent = q.q;
   options.innerHTML="";
-  bar.style.width = Math.round(idx/questions.length*100)+"%";
+  bar.style.width = Math.round(index/questions.length*100)+"%";
 
   q.opts.forEach(o=>{
-  const d = document.createElement("div");
-  d.className = "option";
-  d.textContent = o.t;
-  d.dataset.correct = o.ok;   // 👈 DÒNG FIX
-  d.onclick = () => choose(d, o.ok);
-  options.appendChild(d);
-});
-
+    const d=document.createElement("div");
+    d.className="option";
+    d.textContent=o.t;
+    d.onclick=()=>choose(d,o.ok);
+    options.appendChild(d);
+  });
 }
 
 function choose(el, ok){
-  [...options.children].forEach(o => o.classList.add("disabled"));
+  [...options.children].forEach(o=>o.classList.add("disabled"));
 
   if(ok){
     el.classList.add("correct");
     score++;
-  } else {
+  }else{
     el.classList.add("wrong");
-    tease.textContent = "😏 Sai rồi nha~ hiểu anh thêm tí nữa!";
-
-    // tô đáp án đúng
-    [...options.children].forEach(o => {
-      if(o !== el && o.dataset.correct === "true"){
+    tease.textContent="😏 Sai rồi nha~";
+    [...options.children].forEach(o=>{
+      if(o!==el && questions[index].opts.find(x=>x.t===o.textContent).ok){
         o.classList.add("correct");
       }
     });
   }
 
-  setTimeout(() => {
-    idx++;
-    if(idx < questions.length){
-      loadQ();
-    } else {
-      showResult();
-    }
-  }, 900);
+  setTimeout(()=>{
+    index++;
+    index<questions.length ? loadQuestion() : showResult();
+  },900);
 }
 
 function showResult(){
   game.classList.add("hidden");
   result.classList.remove("hidden");
   bar.style.width="100%";
+
   const percent=Math.round(score/questions.length*100);
+  scoreText.textContent=`Em hiểu anh được ${percent}% 💖`;
 
-  let rank=""; 
-  if(percent >= 85) {
-  rank = "💪 MẠNH THÍIIIII 🔥😎";
-} else if(percent >= 60) {
-  rank = "😏 TẠM CHẤP NHẬN";
-} else {
-  rank = "💀 YẾU THÍ!!! 😈";
+  if(percent>=85){
+    rank.textContent="💪 MẠNH THÍIIIII 🔥😎";
+  }else if(percent>=60){
+    rank.textContent="😏 TẠM CHẤP NHẬN";
+  }else{
+    rank.textContent="💀 YẾU THÍ!!! 😈";
+  }
 }
-}
-
 </script>
 </body>
 </html>
-
