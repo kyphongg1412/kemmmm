@@ -96,54 +96,54 @@
     document.getElementById("loveResult").classList.remove("hidden");
     document.getElementById("gameIntro").classList.remove("hidden");
   }
-
   const questions = [
-    {
-      q: "📅 Ngày tụi mình chính thức yêu nhau là ngày nào?",
-      options: ["14/02/2025", "13/09/2025", "20/10/2025", "01/01/2026"],
-      correct: 1
-    },
-    {
-      q: "📏 Chiều cao của anh là bao nhiêu?",
-      options: ["1m70", "1m73", "1m76", "1m80"],
-      correct: 2
-    },
-    {
-      q: "🏸 Sở thích nhất của anh là gì?",
-      options: ["Gym & chạy bộ", "Game & ngủ", "Cầu lông & bi-a", "Xem phim"],
-      correct: 2
-    },
-    {
-      q: "💦 Trong lúc have sex, anh thích tư thế nào nhất?",
-      options: ["Doggy", "Truyền thống", "Em sướng là anh thích", "Cưỡi ngựa"],
-      correct: 2
-    },
-    {
-      q: "😤 Khi nào anh dễ mất kiên nhẫn nhất?",
-      options: ["Khi bị trách", "Khi bị hiểu lầm", "Khi bị im lặng quá lâu", "Khi bị ghen"],
-      correct: 2
-    },
-    {
-      q: "💍 Điều quan trọng nhất trong tình yêu với anh là gì?",
-      options: ["Lãng mạn", "Vui là được", "Chung thủy – thấu hiểu – gắn bó", "Tiền bạc"],
-      correct: 2
-    },
-    {
-      q: "💔 Điều gì khiến anh tổn thương nhất?",
-      options: ["Bị bỏ rơi", "Bị so sánh", "Bị phủ nhận công sức", "Bị trách oan"],
-      correct: 2
-    },
-    {
-      q: "⚡ Khi có mâu thuẫn, anh sẽ làm gì?",
-      options: ["Im lặng cho nguôi", "Né tránh", "Giải quyết ngay lập tức", "Chờ em nói trước"],
-      correct: 2
-    },
-    {
-      q: "❤️ Người anh yêu nhất là ai?",
-      options: ["Gia đình", "Bản thân", "Một người bí mật", "Kem"],
-      correct: 3
-    }
-  ];
+  {
+    q: "📅 Ngày tụi mình chính thức yêu nhau là ngày nào?",
+    options: ["13/09/2025", "14/02/2025", "20/10/2025", "01/01/2026"],
+    correct: 0
+  },
+  {
+    q: "📏 Chiều cao của anh là bao nhiêu?",
+    options: ["1m80", "1m76", "1m70", "1m73"],
+    correct: 1
+  },
+  {
+    q: "🏸 Sở thích nhất của anh là gì?",
+    options: ["Cầu lông & bi-a", "Gym & chạy bộ", "Xem phim", "Game & ngủ"],
+    correct: 0
+  },
+  {
+    q: "💦 Trong lúc have sex, anh thích tư thế nào nhất?",
+    options: ["Doggy", "Em sướng là anh thích", "Cưỡi ngựa", "Truyền thống"],
+    correct: 1
+  },
+  {
+    q: "😤 Khi nào anh dễ mất kiên nhẫn nhất?",
+    options: ["Khi bị im lặng quá lâu", "Khi bị trách", "Khi bị ghen", "Khi bị hiểu lầm"],
+    correct: 0
+  },
+  {
+    q: "💍 Điều quan trọng nhất trong tình yêu với anh là gì?",
+    options: ["Chung thủy – thấu hiểu – gắn bó", "Tiền bạc", "Vui là được", "Lãng mạn"],
+    correct: 0
+  },
+  {
+    q: "💔 Điều gì khiến anh tổn thương nhất?",
+    options: ["Bị so sánh", "Bị phủ nhận công sức", "Bị bỏ rơi", "Bị trách oan"],
+    correct: 1
+  },
+  {
+    q: "⚡ Khi có mâu thuẫn, anh sẽ làm gì?",
+    options: ["Giải quyết ngay lập tức", "Im lặng cho nguôi", "Chờ em nói trước", "Né tránh"],
+    correct: 0
+  },
+  {
+    q: "❤️ Người anh yêu nhất là ai?",
+    options: ["Kem", "Gia đình", "Bản thân", "Một người bí mật"],
+    correct: 0
+  }
+];
+
 
   let current = 0;
   let score = 0;
