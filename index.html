@@ -122,27 +122,42 @@ function loadQ(){
   bar.style.width = Math.round(idx/questions.length*100)+"%";
 
   q.opts.forEach(o=>{
-    const d=document.createElement("div");
-    d.className="option";
-    d.textContent=o.t;
-    d.onclick=()=>choose(d,o.ok);
-    options.appendChild(d);
-  });
+  const d = document.createElement("div");
+  d.className = "option";
+  d.textContent = o.t;
+  d.dataset.correct = o.ok;   // 👈 DÒNG FIX
+  d.onclick = () => choose(d, o.ok);
+  options.appendChild(d);
+});
+
 }
 
 function choose(el, ok){
-  [...options.children].forEach(o=>o.classList.add("disabled"));
-  if(ok){ el.classList.add("correct"); score++; }
-  else{
+  [...options.children].forEach(o => o.classList.add("disabled"));
+
+  if(ok){
+    el.classList.add("correct");
+    score++;
+  } else {
     el.classList.add("wrong");
-    tease.textContent="😏 Sai rồi nha~ hiểu anh thêm tí nữa!";
-    [...options.children].find(o=>o!==el && o.textContent.includes("Em sướng")).classList?.add("correct");
+    tease.textContent = "😏 Sai rồi nha~ hiểu anh thêm tí nữa!";
+
+    // tô đáp án đúng
+    [...options.children].forEach(o => {
+      if(o !== el && o.dataset.correct === "true"){
+        o.classList.add("correct");
+      }
+    });
   }
-  setTimeout(()=>{
+
+  setTimeout(() => {
     idx++;
-    if(idx<questions.length) loadQ();
-    else showResult();
-  },900);
+    if(idx < questions.length){
+      loadQ();
+    } else {
+      showResult();
+    }
+  }, 900);
 }
 
 function showResult(){
