@@ -2,11 +2,12 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Gửi Em 💖</title>
+  <title>Anh Yêu Kemmmm 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      height: 100vh;
       margin: 0;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -16,29 +17,20 @@
 
     .box {
       background: white;
-      padding: 30px;
+      padding: 25px;
       border-radius: 20px;
+      width: 340px;
       text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      width: 320px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
     h1 {
       color: #ff4d6d;
     }
 
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 15px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
     button {
       margin-top: 15px;
-      padding: 10px 20px;
+      padding: 10px 22px;
       border: none;
       border-radius: 20px;
       background: #ff4d6d;
@@ -47,34 +39,168 @@
       cursor: pointer;
     }
 
-    .result {
-      margin-top: 20px;
-      font-size: 20px;
-      color: #ff4d6d;
-      font-weight: bold;
+    .hidden {
       display: none;
+    }
+
+    .option {
+      background: #ffe6eb;
+      padding: 12px;
+      border-radius: 15px;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .option:hover {
+      background: #ffccd5;
     }
   </style>
 </head>
 <body>
 
-  <div class="box">
+<div class="box">
+
+  <!-- PHẦN 1 -->
+  <div id="lovePage">
     <h1>Em có yêu anh không? 💕</h1>
-
-    <input id="answer" placeholder="Nhập câu trả lời của em...">
-
-    <button onclick="showLove()">Trả lời</button>
-
-    <div class="result" id="result">
-      Anh Yêu Kemmmm 💖💖💖
-    </div>
+    <input id="answer" placeholder="Nhập câu trả lời..."
+      style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc;">
+    <button onclick="goToGame()">Trả lời</button>
+    <p id="loveResult" class="hidden">Anh Yêu Kemmmm 💖</p>
   </div>
 
-  <script>
-    function showLove() {
-      document.getElementById("result").style.display = "block";
+  <!-- PHẦN 2 -->
+  <div id="gameIntro" class="hidden">
+    <h1>🎮 Chơi một trò chơi</h1>
+    <p>Em hiểu anh được bao nhiêu %? 😏</p>
+    <button onclick="startGame()">Bắt đầu</button>
+  </div>
+
+  <!-- PHẦN 3 -->
+  <div id="game" class="hidden">
+    <h1 id="question"></h1>
+    <div id="options"></div>
+  </div>
+
+  <!-- PHẦN 4 -->
+  <div id="result" class="hidden">
+    <h1>Kết quả 💖</h1>
+    <p id="scoreText"></p>
+  </div>
+
+</div>
+
+<script>
+  function goToGame() {
+    document.getElementById("loveResult").classList.remove("hidden");
+    document.getElementById("gameIntro").classList.remove("hidden");
+  }
+
+  const questions = [
+    {
+      q: "📅 Ngày tụi mình chính thức yêu nhau là ngày nào?",
+      options: ["14/02/2025", "13/09/2025", "20/10/2025", "01/01/2026"],
+      correct: 1
+    },
+    {
+      q: "📏 Chiều cao của anh là bao nhiêu?",
+      options: ["1m70", "1m73", "1m76", "1m80"],
+      correct: 2
+    },
+    {
+      q: "🏸 Sở thích nhất của anh là gì?",
+      options: ["Gym & chạy bộ", "Game & ngủ", "Cầu lông & bi-a", "Xem phim"],
+      correct: 2
+    },
+    {
+      q: "💦 Trong lúc have sex, anh thích tư thế nào nhất?",
+      options: ["Doggy", "Truyền thống", "Em sướng là anh thích", "Cưỡi ngựa"],
+      correct: 2
+    },
+    {
+      q: "😤 Khi nào anh dễ mất kiên nhẫn nhất?",
+      options: ["Khi bị trách", "Khi bị hiểu lầm", "Khi bị im lặng quá lâu", "Khi bị ghen"],
+      correct: 2
+    },
+    {
+      q: "💍 Điều quan trọng nhất trong tình yêu với anh là gì?",
+      options: ["Lãng mạn", "Vui là được", "Chung thủy – thấu hiểu – gắn bó", "Tiền bạc"],
+      correct: 2
+    },
+    {
+      q: "💔 Điều gì khiến anh tổn thương nhất?",
+      options: ["Bị bỏ rơi", "Bị so sánh", "Bị phủ nhận công sức", "Bị trách oan"],
+      correct: 2
+    },
+    {
+      q: "⚡ Khi có mâu thuẫn, anh sẽ làm gì?",
+      options: ["Im lặng cho nguôi", "Né tránh", "Giải quyết ngay lập tức", "Chờ em nói trước"],
+      correct: 2
+    },
+    {
+      q: "❤️ Người anh yêu nhất là ai?",
+      options: ["Gia đình", "Bản thân", "Một người bí mật", "Kem"],
+      correct: 3
     }
-  </script>
+  ];
+
+  let current = 0;
+  let score = 0;
+
+  function startGame() {
+    document.getElementById("lovePage").classList.add("hidden");
+    document.getElementById("gameIntro").classList.add("hidden");
+    document.getElementById("game").classList.remove("hidden");
+    loadQuestion();
+  }
+
+  function loadQuestion() {
+    const q = questions[current];
+    document.getElementById("question").innerText = q.q;
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML = "";
+
+    q.options.forEach((opt, index) => {
+      const div = document.createElement("div");
+      div.className = "option";
+      div.innerText = opt;
+      div.onclick = () => selectAnswer(index);
+      optionsDiv.appendChild(div);
+    });
+  }
+
+  function selectAnswer(index) {
+    if (index === questions[current].correct) score++;
+    current++;
+
+    if (current < questions.length) {
+      loadQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult() {
+    document.getElementById("game").classList.add("hidden");
+    document.getElementById("result").classList.remove("hidden");
+
+    const percent = Math.round((score / questions.length) * 100);
+    let message = "";
+
+    if (percent >= 80) {
+      message = "Em hiểu anh rất nhiều rồi đó 😘💖";
+    } else if (percent >= 50) {
+      message = "Em hiểu anh kha khá, mình còn khám phá nhau thêm nha 😏";
+    } else {
+      message = "Không sao cả, mình còn nhiều thời gian bên nhau mà 💕";
+    }
+
+    document.getElementById("scoreText").innerHTML =
+      `Em hiểu anh được <b>${percent}%</b><br>${message}`;
+  }
+</script>
 
 </body>
 </html>
+
