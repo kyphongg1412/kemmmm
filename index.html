@@ -167,13 +167,14 @@ function showResult(){
   const percent=Math.round(score/questions.length*100);
 
   let rank=""; 
-  if(percent>=85) rank="🏆 Người yêu quốc dân 💖";
-  else if(percent>=60) rank="✨ Hiểu anh khá nhiều 😘";
-  else rank="😅 Cần hiểu anh thêm nha";
-
-  scoreText.innerHTML=`Em hiểu anh được <b>${percent}%</b>`;
-  document.getElementById("rank").textContent=rank;
+  if(percent >= 85) {
+  rank = "💪 MẠNH THÍIIIII 🔥😎";
+} else if(percent >= 60) {
+  rank = "😏 TẠM CHẤP NHẬN";
+} else {
+  rank = "💀 YẾU THÍ!!! 😈";
 }
+
 </script>
 </body>
 </html>
