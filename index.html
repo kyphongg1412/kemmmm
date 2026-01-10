@@ -2,44 +2,33 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Love Quiz Game 💖</title>
+<title>How Well Do You Know Me?</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
-  margin:0;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  margin:0; min-height:100vh;
+  display:flex; justify-content:center; align-items:center;
   background:linear-gradient(135deg,#ff9a9e,#fad0c4);
   font-family:Arial,sans-serif;
 }
 .box{
-  background:#fff;
-  padding:22px;
-  border-radius:20px;
-  width:380px;
-  text-align:center;
+  background:#fff; padding:22px; border-radius:20px;
+  width:380px; text-align:center;
   box-shadow:0 10px 30px rgba(0,0,0,.2);
 }
-h1{color:#ff4d6d;margin-bottom:10px}
-input,select{
-  width:100%;
-  padding:10px;
+h1{color:#ff4d6d}
+input, select{
+  width:100%; padding:10px;
+  border-radius:10px; border:1px solid #ccc;
   margin-top:8px;
-  border-radius:10px;
-  border:1px solid #ccc;
 }
 button{
   margin-top:12px;
   padding:10px 22px;
-  border:none;
-  border-radius:20px;
-  background:#ff4d6d;
-  color:#fff;
-  font-size:16px;
-  cursor:pointer;
+  border:none; border-radius:20px;
+  background:#ff4d6d; color:#fff;
+  font-size:16px; cursor:pointer;
 }
 .hidden{display:none}
 
@@ -52,25 +41,24 @@ button{
 }
 .option.correct{background:#b7f7cc}
 .option.wrong{background:#ffb3b3}
-.option.disabled{pointer-events:none}
+.option.disabled{pointer-events:none; opacity:.8}
 
 .progress{
-  height:8px;
-  background:#eee;
-  border-radius:10px;
+  height:8px; background:#eee;
+  border-radius:10px; overflow:hidden;
   margin:10px 0;
 }
-.bar{
-  height:100%;
-  width:0%;
-  background:#ff4d6d;
-  transition:.3s;
-}
+.bar{height:100%; width:0%; background:#ff4d6d}
 
-.rank{
-  font-size:20px;
-  font-weight:bold;
-  margin-top:12px;
+.tease{margin-top:8px; color:#ff4d6d; font-size:14px}
+.rank{font-size:18px; margin-top:10px}
+.linkBox{
+  word-break:break-all;
+  background:#f5f5f5;
+  padding:10px;
+  border-radius:10px;
+  margin-top:10px;
+  font-size:14px;
 }
 </style>
 </head>
@@ -79,24 +67,32 @@ button{
 <div class="box">
 
 <!-- CREATE -->
-<div id="creator">
-  <h1>🎮 Tạo trò chơi câu hỏi</h1>
-  <input id="playerName" placeholder="Tên người được hỏi (vd: Kem)">
+<div id="create">
+  <h1>🎯 Tạo Quiz Về Bạn</h1>
+  <input id="creatorName" placeholder="Nhập tên của bạn">
+  <hr>
   <input id="qText" placeholder="Nhập câu hỏi">
-  <input id="a1" placeholder="Đáp án 1">
-  <input id="a2" placeholder="Đáp án 2">
-  <input id="a3" placeholder="Đáp án 3">
-  <input id="a4" placeholder="Đáp án 4">
-
+  <input id="a0" placeholder="Đáp án 1">
+  <input id="a1" placeholder="Đáp án 2">
+  <input id="a2" placeholder="Đáp án 3">
+  <input id="a3" placeholder="Đáp án 4">
   <select id="correct">
-    <option value="0">Đáp án đúng: 1</option>
-    <option value="1">Đáp án đúng: 2</option>
-    <option value="2">Đáp án đúng: 3</option>
-    <option value="3">Đáp án đúng: 4</option>
+    <option value="">-- Chọn đáp án đúng --</option>
+    <option value="0">Đáp án 1</option>
+    <option value="1">Đáp án 2</option>
+    <option value="2">Đáp án 3</option>
+    <option value="3">Đáp án 4</option>
   </select>
+  <button onclick="addQuestion()">➕ Thêm câu hỏi</button>
+  <button onclick="finishQuiz()">✅ Kết thúc & tạo link</button>
+  <p id="count"></p>
+</div>
 
-  <button onclick="addQuestion()">➕ Thêm câu</button>
-  <button onclick="finishCreate()">▶️ Kết thúc & Chơi</button>
+<!-- SHARE -->
+<div id="share" class="hidden">
+  <h1>🔗 Link của bạn</h1>
+  <div id="shareLink" class="linkBox"></div>
+  <p>Gửi link này cho người khác làm 😏</p>
 </div>
 
 <!-- GAME -->
@@ -104,11 +100,12 @@ button{
   <div class="progress"><div class="bar" id="bar"></div></div>
   <h1 id="question"></h1>
   <div id="options"></div>
+  <div id="tease" class="tease"></div>
 </div>
 
 <!-- RESULT -->
 <div id="result" class="hidden">
-  <h1>Kết quả 🎯</h1>
+  <h1>Kết quả 💖</h1>
   <p id="scoreText"></p>
   <div id="rank" class="rank"></div>
 </div>
@@ -116,44 +113,62 @@ button{
 </div>
 
 <script>
-let questions=[];
-let index=0, score=0;
-let player="";
+let quiz = {name:"", questions:[]};
+let idx=0, score=0;
+
+const teases=[
+  "😏 Hiểu vậy là chưa đủ đâu nha",
+  "💀 Sai rồi kìa",
+  "🤡 Trả lời vậy mà cũng chọn",
+  "😈 Hơi thất vọng nhaaa"
+];
 
 function addQuestion(){
-  const q=qText.value.trim();
-  const answers=[a1.value,a2.value,a3.value,a4.value];
-  const c=Number(correct.value);
+  const q=qText.value;
+  const a=[a0.value,a1.value,a2.value,a3.value];
+  const c=correct.value;
 
-  if(!q || answers.some(a=>!a)){
-    alert("Nhập đầy đủ câu hỏi và đáp án!");
+  if(!q||a.some(x=>!x)||c===""){
+    alert("Nhập đầy đủ câu hỏi & đáp án");
     return;
   }
 
-  questions.push({q,answers,c});
-
-  qText.value=a1.value=a2.value=a3.value=a4.value="";
+  quiz.questions.push({q,a,c:+c});
+  qText.value=a0.value=a1.value=a2.value=a3.value="";
+  correct.value="";
+  count.textContent="Số câu: "+quiz.questions.length;
 }
 
-function finishCreate(){
-  if(questions.length===0){
-    alert("Chưa có câu hỏi nào!");
+function finishQuiz(){
+  if(!creatorName.value||quiz.questions.length===0){
+    alert("Thiếu tên hoặc câu hỏi");
     return;
   }
-  player=playerName.value||"Người ấy";
-  creator.classList.add("hidden");
+  quiz.name=creatorName.value;
+  const id=Date.now().toString(36);
+  localStorage.setItem("quiz_"+id,JSON.stringify(quiz));
+  shareLink.textContent=location.origin+location.pathname+"?quiz="+id;
+  create.classList.add("hidden");
+  share.classList.remove("hidden");
+}
+
+function loadQuiz(id){
+  const data=localStorage.getItem("quiz_"+id);
+  if(!data)return;
+  quiz=JSON.parse(data);
+  create.classList.add("hidden");
   game.classList.remove("hidden");
-  index=0; score=0;
-  loadQuestion();
+  loadQ();
 }
 
-function loadQuestion(){
-  const q=questions[index];
+function loadQ(){
+  tease.textContent="";
+  const q=quiz.questions[idx];
   question.textContent=q.q;
   options.innerHTML="";
-  bar.style.width=Math.round(index/questions.length*100)+"%";
+  bar.style.width=Math.round(idx/quiz.questions.length*100)+"%";
 
-  q.answers.forEach((t,i)=>{
+  q.a.forEach((t,i)=>{
     const d=document.createElement("div");
     d.className="option";
     d.textContent=t;
@@ -164,36 +179,32 @@ function loadQuestion(){
 
 function choose(el,ok){
   [...options.children].forEach(o=>o.classList.add("disabled"));
-
   if(ok){
     el.classList.add("correct");
     score++;
   }else{
     el.classList.add("wrong");
-    options.children[questions[index].c].classList.add("correct");
+    tease.textContent=teases[Math.floor(Math.random()*teases.length)];
+    [...options.children][quiz.questions[idx].c].classList.add("correct");
   }
-
   setTimeout(()=>{
-    index++;
-    index<questions.length ? loadQuestion() : showResult();
-  },800);
+    idx++;
+    idx<quiz.questions.length?loadQ():showResult();
+  },900);
 }
 
 function showResult(){
   game.classList.add("hidden");
   result.classList.remove("hidden");
-
-  const percent=Math.round(score/questions.length*100);
-  scoreText.textContent=`Bạn hiểu "${player}" được ${percent}% 💖`;
-
-  if(percent>=85){
-    rank.textContent="💪 MẠNH THÍIIIII";
-  }else if(percent>=60){
-    rank.textContent="😏 TẠM CHẤP NHẬN";
-  }else{
-    rank.textContent="💀 YẾU THÍ!!!";
-  }
+  const percent=Math.round(score/quiz.questions.length*100);
+  scoreText.innerHTML=`Bạn hiểu <b>${quiz.name}</b> được <b>${percent}%</b>`;
+  if(percent>=85) rank.textContent="💪 MẠNH THÍIIIII 🔥";
+  else if(percent>=60) rank.textContent="😏 TẠM CHẤP NHẬN";
+  else rank.textContent="💀 YẾU THÍ!!! 😈";
 }
+
+const id=new URLSearchParams(location.search).get("quiz");
+if(id) loadQuiz(id);
 </script>
 </body>
 </html>
