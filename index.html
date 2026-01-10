@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Anh Yêu Kemmmm 💖</title>
+<title>Love Quiz Game 💖</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -19,12 +19,20 @@ body{
   background:#fff;
   padding:22px;
   border-radius:20px;
-  width:360px;
+  width:380px;
   text-align:center;
   box-shadow:0 10px 30px rgba(0,0,0,.2);
 }
-h1{color:#ff4d6d;margin:10px 0}
+h1{color:#ff4d6d;margin-bottom:10px}
+input,select{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
 button{
+  margin-top:12px;
   padding:10px 22px;
   border:none;
   border-radius:20px;
@@ -41,19 +49,16 @@ button{
   border-radius:14px;
   margin-top:10px;
   cursor:pointer;
-  transition:.2s;
 }
-.option:hover{background:#ffccd5}
 .option.correct{background:#b7f7cc}
 .option.wrong{background:#ffb3b3}
-.option.disabled{pointer-events:none;opacity:.8}
+.option.disabled{pointer-events:none}
 
 .progress{
   height:8px;
   background:#eee;
   border-radius:10px;
-  overflow:hidden;
-  margin:10px 0 15px;
+  margin:10px 0;
 }
 .bar{
   height:100%;
@@ -62,29 +67,36 @@ button{
   transition:.3s;
 }
 
-.tease{margin-top:8px;color:#ff4d6d;font-size:14px}
-.rank{font-size:20px;margin-top:12px;font-weight:bold}
+.rank{
+  font-size:20px;
+  font-weight:bold;
+  margin-top:12px;
+}
 </style>
 </head>
 
 <body>
 <div class="box">
 
-<!-- PAGE 1 -->
-<div id="lovePage">
-  <h1>Em có yêu anh không? 💕</h1>
-  <input id="loveInput" placeholder="Nhập câu trả lời..."
-    style="width:100%;padding:10px;border-radius:10px;border:1px solid #ccc;">
-  <br><br>
-  <button onclick="goIntro()">Trả lời</button>
-  <p id="loveResult" class="hidden">Anh Yêu Kemmmm 💖</p>
-</div>
+<!-- CREATE -->
+<div id="creator">
+  <h1>🎮 Tạo trò chơi câu hỏi</h1>
+  <input id="playerName" placeholder="Tên người được hỏi (vd: Kem)">
+  <input id="qText" placeholder="Nhập câu hỏi">
+  <input id="a1" placeholder="Đáp án 1">
+  <input id="a2" placeholder="Đáp án 2">
+  <input id="a3" placeholder="Đáp án 3">
+  <input id="a4" placeholder="Đáp án 4">
 
-<!-- INTRO -->
-<div id="intro" class="hidden">
-  <h1>🎮 Trò chơi nhỏ</h1>
-  <p>Em hiểu anh được bao nhiêu %? 😏</p>
-  <button onclick="startGame()">Bắt đầu</button>
+  <select id="correct">
+    <option value="0">Đáp án đúng: 1</option>
+    <option value="1">Đáp án đúng: 2</option>
+    <option value="2">Đáp án đúng: 3</option>
+    <option value="3">Đáp án đúng: 4</option>
+  </select>
+
+  <button onclick="addQuestion()">➕ Thêm câu</button>
+  <button onclick="finishCreate()">▶️ Kết thúc & Chơi</button>
 </div>
 
 <!-- GAME -->
@@ -92,12 +104,11 @@ button{
   <div class="progress"><div class="bar" id="bar"></div></div>
   <h1 id="question"></h1>
   <div id="options"></div>
-  <div id="tease" class="tease"></div>
 </div>
 
 <!-- RESULT -->
 <div id="result" class="hidden">
-  <h1>Kết quả 💖</h1>
+  <h1>Kết quả 🎯</h1>
   <p id="scoreText"></p>
   <div id="rank" class="rank"></div>
 </div>
@@ -105,62 +116,53 @@ button{
 </div>
 
 <script>
-const questionsRaw = [
- {q:"📅 Ngày tụi mình yêu nhau?", a:["13/09/2025","14/02/2025","20/10/2025","01/01/2026"], c:0},
- {q:"📏 Chiều cao của anh?", a:["1m80","1m76","1m70","1m73"], c:1},
- {q:"🏸 Sở thích nhất của anh?", a:["Cầu lông & bi-a","Gym","Xem phim","Game"], c:0},
- {q:"💦 Trong lúc have sex, anh thích tư thế nào nhất?", a:["Doggy","Em sướng là anh thích","Cưỡi ngựa","Truyền thống"], c:1},
- {q:"😤 Khi nào anh dễ mất kiên nhẫn?", a:["Khi bị im lặng quá lâu","Bị trách","Bị ghen","Bị hiểu lầm"], c:0},
- {q:"💍 Điều quan trọng nhất trong tình yêu?", a:["Chung thủy – thấu hiểu – gắn bó","Tiền bạc","Vui là được","Lãng mạn"], c:0},
- {q:"💔 Điều khiến anh tổn thương nhất?", a:["Bị so sánh","Bị phủ nhận công sức","Bị bỏ rơi","Bị trách oan"], c:1},
- {q:"⚡ Khi có mâu thuẫn, anh sẽ?", a:["Giải quyết ngay","Im lặng","Chờ em nói","Né tránh"], c:0},
- {q:"❤️ Người anh yêu nhất?", a:["Kem","Bạn bè","Bản thân","Bí mật"], c:0}
-];
+let questions=[];
+let index=0, score=0;
+let player="";
 
-let questions=[], index=0, score=0;
+function addQuestion(){
+  const q=qText.value.trim();
+  const answers=[a1.value,a2.value,a3.value,a4.value];
+  const c=Number(correct.value);
 
-function shuffle(arr){
-  return arr.map(v=>({v, r:Math.random()}))
-            .sort((a,b)=>a.r-b.r)
-            .map(x=>x.v);
+  if(!q || answers.some(a=>!a)){
+    alert("Nhập đầy đủ câu hỏi và đáp án!");
+    return;
+  }
+
+  questions.push({q,answers,c});
+
+  qText.value=a1.value=a2.value=a3.value=a4.value="";
 }
 
-function goIntro(){
-  document.getElementById("loveResult").classList.remove("hidden");
-  document.getElementById("intro").classList.remove("hidden");
-}
-
-function startGame(){
-  lovePage.classList.add("hidden");
-  intro.classList.add("hidden");
+function finishCreate(){
+  if(questions.length===0){
+    alert("Chưa có câu hỏi nào!");
+    return;
+  }
+  player=playerName.value||"Người ấy";
+  creator.classList.add("hidden");
   game.classList.remove("hidden");
-
-  questions = shuffle(questionsRaw).map(q=>{
-    const opts = q.a.map((t,i)=>({t, ok:i===q.c}));
-    return {q:q.q, opts:shuffle(opts)};
-  });
-
   index=0; score=0;
   loadQuestion();
 }
 
 function loadQuestion(){
-  tease.textContent="";
-  const q = questions[index];
-  question.textContent = q.q;
+  const q=questions[index];
+  question.textContent=q.q;
   options.innerHTML="";
-  bar.style.width = Math.round(index/questions.length*100)+"%";
+  bar.style.width=Math.round(index/questions.length*100)+"%";
 
-  q.opts.forEach(o=>{
+  q.answers.forEach((t,i)=>{
     const d=document.createElement("div");
     d.className="option";
-    d.textContent=o.t;
-    d.onclick=()=>choose(d,o.ok);
+    d.textContent=t;
+    d.onclick=()=>choose(d,i===q.c);
     options.appendChild(d);
   });
 }
 
-function choose(el, ok){
+function choose(el,ok){
   [...options.children].forEach(o=>o.classList.add("disabled"));
 
   if(ok){
@@ -168,34 +170,28 @@ function choose(el, ok){
     score++;
   }else{
     el.classList.add("wrong");
-    tease.textContent="😏 Sai rồi nha~";
-    [...options.children].forEach(o=>{
-      if(o!==el && questions[index].opts.find(x=>x.t===o.textContent).ok){
-        o.classList.add("correct");
-      }
-    });
+    options.children[questions[index].c].classList.add("correct");
   }
 
   setTimeout(()=>{
     index++;
     index<questions.length ? loadQuestion() : showResult();
-  },900);
+  },800);
 }
 
 function showResult(){
   game.classList.add("hidden");
   result.classList.remove("hidden");
-  bar.style.width="100%";
 
   const percent=Math.round(score/questions.length*100);
-  scoreText.textContent=`Em hiểu anh được ${percent}% 💖`;
+  scoreText.textContent=`Bạn hiểu "${player}" được ${percent}% 💖`;
 
   if(percent>=85){
-    rank.textContent="💪 MẠNH THÍIIIII 🔥😎";
+    rank.textContent="💪 MẠNH THÍIIIII";
   }else if(percent>=60){
     rank.textContent="😏 TẠM CHẤP NHẬN";
   }else{
-    rank.textContent="💀 YẾU THÍ!!! 😈";
+    rank.textContent="💀 YẾU THÍ!!!";
   }
 }
 </script>
